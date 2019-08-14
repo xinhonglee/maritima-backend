@@ -161,6 +161,7 @@ if (!class_exists('Dental_CPT')) :
             remove_menu_page('edit.php'); //Posts
             remove_menu_page('edit.php?post_type=page'); //Pages
             remove_menu_page('edit-comments.php'); //Comments
+            remove_menu_page('themes.php'); //Themes
         }
     }
 
