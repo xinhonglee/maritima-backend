@@ -44,9 +44,17 @@ if (!class_exists('Dental_Hook')) :
 
                         $treatment['id'] = get_the_ID();
                         $treatment['category'] = $terms_slug;
-                        $treatment['title'] = get_field('title');
-                        $treatment['sub_title'] = get_field('sub_title');
-                        $treatment['short_description'] = get_field('short_description');
+                        $ml_contents = get_field('ml_contents');
+
+                        $contents = [];
+                        foreach ($ml_contents as $content) {
+                            $contents[$content['language_code']] = array(
+                                'title' => $content['title'],
+                                'sub_title' => $content['sub_title'],
+                                'short_description' => $content['short_description']
+                            );
+                        }
+                        $treatment['contents'] = $contents;
 
                         array_push($treatments, $treatment);
                     endwhile;
@@ -63,24 +71,28 @@ if (!class_exists('Dental_Hook')) :
         public function getTreatment($id)
         {
             try {
-                $post = get_post($id);
-
                 $treatment['id'] = $id;
                 $terms = get_the_terms($id, 'treatment_category');
                 $treatment['category'] = $terms[0]->slug;
-                $treatment['title'] = get_field('title', $id);
-                $treatment['sub_title'] = get_field('sub_title', $id);
-                $treatment['short_description'] = get_field('short_description', $id);
-                $treatment['long_description'] = get_field('long_description', $id);
-                $treatment['specs'] = [];
                 $treatment['related'] = [];
-                $specs = get_field('specifics', $id);
 
-                if ($specs) {
-                    foreach ($specs as $spec) {
-                        array_push($treatment['specs'], $spec['item']);
+                $ml_contents = get_field('ml_contents', $id);
+                $contents = [];
+                foreach ($ml_contents as $content) {
+                    $contents[$content['language_code']] = array(
+                        'title' => $content['title'],
+                        'sub_title' => $content['sub_title'],
+                        'short_description' => $content['short_description'],
+                        'long_description' => $content['long_description'],
+                        'specs' => []
+                    );
+
+                    foreach ($content['specifics'] as $spec) {
+                        array_push($contents[$content['language_code']]['specs'], $spec['item']);
                     }
+
                 }
+                $treatment['contents'] = $contents;
 
                 $_posts = new WP_Query(array(
                     'post_type' => 'treatment',
@@ -99,19 +111,25 @@ if (!class_exists('Dental_Hook')) :
                 if ($_posts->have_posts()):
                     while ($_posts->have_posts()) : $_posts->the_post();
                         $related = [];
-
                         $related['id'] = get_the_ID();
-                        $related['title'] = get_field('title');
-                        $related['sub_title'] = get_field('sub_title');
-                        $related['short_description'] = get_field('short_description');
-                        $related['long_description'] = get_field('short_description');
-                        $related['specs'] = [];
 
-                        if (have_rows('specifics')) {
-                            while (have_rows('specifics')) : the_row();
-                                array_push($related['specs'], get_sub_field('item'));
-                            endwhile;
+                        $ml_contents = get_field('ml_contents');
+                        $contents = [];
+                        foreach ($ml_contents as $content) {
+                            $contents[$content['language_code']] = array(
+                                'title' => $content['title'],
+                                'sub_title' => $content['sub_title'],
+                                'short_description' => $content['short_description'],
+                                'long_description' => $content['long_description'],
+                                'specs' => []
+                            );
+
+                            foreach ($content['specifics'] as $spec) {
+                                array_push($contents[$content['language_code']]['specs'], $spec['item']);
+                            }
+
                         }
+                        $related['contents'] = $contents;
 
                         array_push($treatment['related'], $related);
                     endwhile;
@@ -148,16 +166,23 @@ if (!class_exists('Dental_Hook')) :
 
                 if ($_posts->have_posts()):
                     while ($_posts->have_posts()) : $_posts->the_post();
-
                         $product = [];
 
                         $product['id'] = get_the_ID();
-                        $product['title'] = get_field('title');
                         $product['image'] = get_field('image');
-                        $product['description'] = get_field('description');
                         $product['purchase_link'] = get_field('purchase_link');
                         $product['price'] = get_field('price');
                         $product['discount_price'] = get_field('discount_price');
+
+                        $ml_contents = get_field('ml_contents');
+                        $contents = [];
+                        foreach ($ml_contents as $content) {
+                            $contents[$content['language_code']] = array(
+                                'title' => $content['title'],
+                                'description' => $content['description']
+                            );
+                        }
+                        $product['contents'] = $contents;
 
                         array_push($products, $product);
                     endwhile;
@@ -186,12 +211,20 @@ if (!class_exists('Dental_Hook')) :
                         $news = [];
 
                         $news['id'] = get_the_ID();
-                        $news['title'] = get_field('title');
                         $news['image'] = get_field('image');
-                        $news['short_description'] = get_field('short_description');
-                        $news['long_description'] = get_field('long_description');
                         $news['published_at'] = get_field('published_at');
                         $news['author'] = get_field('author');
+
+                        $ml_contents = get_field('ml_contents');
+                        $contents = [];
+                        foreach ($ml_contents as $content) {
+                            $contents[$content['language_code']] = array(
+                                'title' => $content['title'],
+                                'short_description' => $content['short_description'],
+                                'long_description' => $content['long_description']
+                            );
+                        }
+                        $news['contents'] = $contents;
 
                         array_push($news_list, $news);
                     endwhile;
@@ -207,16 +240,23 @@ if (!class_exists('Dental_Hook')) :
         public function getNews($id)
         {
             try {
-                $post = get_post($id);
 
                 $news['id'] = $id;
-                $news['title'] = get_field('title', $id);
                 $news['image'] = get_field('image', $id);
-                $news['short_description'] = get_field('short_description', $id);
-                $news['long_description'] = get_field('long_description', $id);
                 $news['published_at'] = get_field('published_at', $id);
                 $news['author'] = get_field('author', $id);
                 $news['related'] = [];
+
+                $ml_contents = get_field('ml_contents', $id);
+                $contents = [];
+                foreach ($ml_contents as $content) {
+                    $contents[$content['language_code']] = array(
+                        'title' => $content['title'],
+                        'short_description' => $content['short_description'],
+                        'long_description' => $content['long_description']
+                    );
+                }
+                $news['contents'] = $contents;
 
                 $_posts = new WP_Query(array(
                     'post_type' => 'news',
@@ -230,12 +270,20 @@ if (!class_exists('Dental_Hook')) :
                         $related = [];
 
                         $related['id'] = get_the_ID();
-                        $related['title'] = get_field('title');
                         $related['image'] = get_field('image');
-                        $related['short_description'] = get_field('short_description');
-                        $related['long_description'] = get_field('long_description');
                         $related['published_at'] = get_field('published_at');
                         $related['author'] = get_field('author');
+
+                        $ml_contents = get_field('ml_contents');
+                        $contents = [];
+                        foreach ($ml_contents as $content) {
+                            $contents[$content['language_code']] = array(
+                                'title' => $content['title'],
+                                'short_description' => $content['short_description'],
+                                'long_description' => $content['long_description']
+                            );
+                        }
+                        $related['contents'] = $contents;
 
                         array_push($news['related'], $related);
                     endwhile;

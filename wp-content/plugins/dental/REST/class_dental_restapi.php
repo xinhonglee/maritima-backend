@@ -170,7 +170,6 @@ if (!class_exists('Dental_RESTApi')) :
                 $last_name = $request->get_param('lastName');
                 $user_email = $request->get_param('email');
                 $phone_number = $request->get_param('phone');
-                $address = $request->get_param('address');
                 $message = $request->get_param('message');
                 $status = $request->get_param('status');
 
@@ -187,7 +186,6 @@ if (!class_exists('Dental_RESTApi')) :
                               <p>User Name: ' . $first_name . ' ' . $last_name . '</p>
                               <p>User Email: ' . $user_email . '</p>
                               <p>Phone Number: ' . $phone_number . '</p>
-                              <p>Address: ' . $address . ' </p>
                               <p>Message:</p>
                               <p>' . $message . '</p>
                             </div>
