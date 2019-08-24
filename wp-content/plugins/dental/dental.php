@@ -64,6 +64,7 @@ if (!class_exists('Dental')) :
         private $hooks;
         private $restapi;
         private $cpt;
+        private $acf;
 
         /**
          * Main Dental Instance
@@ -164,6 +165,9 @@ if (!class_exists('Dental')) :
             // Custom Post Types
             require_once DENTAL_PLUGIN_DIR . 'include/class_dental_cpt.php';
 
+            // Advanced Custom Fields
+            require_once DENTAL_PLUGIN_DIR . 'include/class_dental_acf.php';
+
             // RESTful API
             require_once DENTAL_PLUGIN_DIR . 'Hook/class_dental_hook.php';
 
@@ -187,6 +191,7 @@ if (!class_exists('Dental')) :
            self::$instance->cpt = new Dental_CPT();
            self::$instance->hooks = new Dental_Hook();
            self::$instance->restapi = new Dental_RESTApi();
+           self::$instance->acf = new Dental_ACF();
         }
 
     }
